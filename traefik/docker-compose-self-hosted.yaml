@@ -39,3 +39,6 @@ services:
       - "traefik.http.routers.api.entrypoints=web"
       - "traefik.http.routers.api.rule=Host(`test.ovsss.ru`)"
       - "traefik.http.routers.api.service=api@internal"
+
+      - "traefik.http.routers.dashboard.middlewares=test-auth"
+      - "traefik.http.middlewares.test-auth.basicauth.users=test:$$apr1$$cXLXDHc1$$uWMY7qcMYvpQHX7m0v8WV0"
