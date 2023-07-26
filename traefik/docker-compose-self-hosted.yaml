@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  traefik:
+    image: traefik
+    restart: always
+    command:
+      - "--providers.docker"
+      - "--providers.docker.exposedByDefault=false"
+      - "--api.dashboard=true"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      - "--certificatesresolvers.letsencrypt.acme.email=cfijr2033@gmail.com"
+      - "--certificatesresolvers.letsencrypt.acme.storage=/etc/traefik/acme/acme.json"
+      - "--certificatesresolvers.letsencrypt.acme.httpchallenge=true"
+      - "--certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web"
+      - "--entrypoints.web.http.redirections.entryPoint.to=websecure"
+      - "--entrypoints.web.http.redirections.entryPoint.scheme=https"
+      - "--log.level=DEBUG"
+      - "--api=true"
+      - "--api.insecure=true"
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./letsencrypt/acme.json:/etc/traefik/acme/acme.json
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.dashboard-http.entrypoints=web"
+      - "traefik.http.routers.dashboard-http.rule=Host(`test.88-218-62-19.traefik.me`)"
+      - "traefik.http.routers.dashboard-http.service=api@internal"
+      - "traefik.http.routers.dashboard.entrypoints=websecure"
+      - "traefik.http.routers.dashboard.rule=Host(`test.88-218-62-19.traefik.me`)"
+      - "traefik.http.routers.dashboard.tls=true"
+      - "traefik.http.routers.dashboard.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.dashboard.service=api@internal"
+
+      - "traefik.http.routers.api.entrypoints=web"
+      - "traefik.http.routers.api.rule=Host(`test.ovsss.ru`)"
+      - "traefik.http.routers.api.service=api@internal"
